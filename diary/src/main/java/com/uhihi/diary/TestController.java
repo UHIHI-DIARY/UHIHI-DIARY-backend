@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+
 @Controller // controller의 기능을 수행한다.
 public class TestController {
     /*
@@ -12,7 +13,7 @@ public class TestController {
      */
     @RequestMapping("/test")
     @ResponseBody
-    public String hello() {
+    public String test() {
         return "TEST PAGE spring boot";
     }
 }
