@@ -50,7 +50,9 @@ public class AuthController {
         /*
             check email repetition
          */
+        log.info("--------------------");
         log.info(String.valueOf(map));
+        log.info("----------------------");
 //        log.info(String.format("/auth/emailcode: %s", userEmail));
 //        if (userEmail != "failToGetEmail") {
 //            if (userService.checkUserRepeat(userEmail) == true) {
