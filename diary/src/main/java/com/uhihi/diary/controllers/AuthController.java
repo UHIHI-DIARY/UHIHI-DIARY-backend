@@ -1,13 +1,16 @@
 package com.uhihi.diary.controllers;
 
 import com.uhihi.diary.model.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @RestController // controller의 기능을 수행한다.
+@Slf4j
 public class AuthController {
     /*
     @RequestMapping : URL과 method를 mapping한다.
@@ -26,13 +29,14 @@ public class AuthController {
     }
 
     @RequestMapping("/auth/emailcode")
-    public ResponseEntity auth_email_code(@RequestParam(value="email") String userEmail) {
+    public ResponseEntity auth_email_code(@RequestParam(value="email", required = false, defaultValue = "can't get email") String userEmail) {
         /*
             check email repetition
          */
+        log.info(String.format("/auth/emailcode: %s", userEmail));
         if(userService.checkUserRepeat(userEmail) == true){
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity(userEmail, HttpStatus.OK);
         }
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(userEmail, HttpStatus.BAD_REQUEST);
     }
 }
