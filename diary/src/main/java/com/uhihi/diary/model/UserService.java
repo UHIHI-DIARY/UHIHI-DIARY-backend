@@ -19,7 +19,7 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public boolean checkUserRepeat(String userEmail){
+    public int checkUserRepeat(String userEmail){
         if(userMapper.checkEmailRepeat((userEmail)) == 0){
             /*
                 no repeat
@@ -34,21 +34,20 @@ public class UserService {
             reStatus = userMapper.insertCheckCode(userEmail, code);
             if(reStatus == 0){
                 log.error("checkUserRepeat: fail to insert code");
-                return false;
+                return 3; //  status: 500
             }
             else {
                 log.info(String.format("checkUserRepeat: [code: %s]", code));
                 if(!mailSend(userEmail, code)){
                     log.error("fail to send email");
                     userMapper.deleteCode(userEmail);
-                    return false;
+                    return 3; // status 500
                 }
+                return 1; // no error
             }
-
-            return true;
         }
         log.info("checkUserRepeat: count more than 1");
-        return false; // repeat email
+        return 2; // repeat 400
     }
 
     public boolean mailSend(String userEmail, String code){

@@ -17,6 +17,6 @@ public interface UserMapper {
     @Insert("INSERT INTO auth_email(email, code) VALUES(#{userEmail}, #{code})")
     int insertCheckCode(@Param("userEmail") String userEmail, @Param("code") String code);
 
-    @Delete("DELETE from auth_email where email = #{userEmail}");
+    @Delete("DELETE from auth_email where email = #{userEmail}")
     int deleteCode(@Param("userEmail") String userEmail);
 }

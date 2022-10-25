@@ -37,7 +37,7 @@ public class AuthController {
             check email repetition
          */
         String userEmail = "can't get mail";
-
+        int reStatus;
         if(map.size() != 1){
             userEmail = (String)map.get("email");
         }
@@ -48,8 +48,13 @@ public class AuthController {
         log.info("----------------------");
 
         if (userEmail != "failToGetEmail") {
-            if (userService.checkUserRepeat(userEmail) == true) {
+            reStatus = userService.checkUserRepeat(userEmail);
+            if (reStatus == 1) {
                 return new ResponseEntity(HttpStatus.OK);
+            }
+            else if(reStatus == 3){ // fail
+                log.error(String.format("/auth/emailcode: fail to insert code in db or send mail"));
+                return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
         log.error(String.format("/auth/emailcode: wrong email %s", userEmail));
