@@ -12,11 +12,12 @@ import javax.mail.internet.MimeMessage;
 @Slf4j
 public class UserService {
     private final UserMapper userMapper;
-    private final JavaMailSender mailSender = null;
+    private final JavaMailSender mailSender;
     private static final String FROM_ADDRESS = "uhihidiary@gmail.com";
 
-    public UserService(UserMapper userMapper){
+    public UserService(UserMapper userMapper, JavaMailSender mailSender){
         this.userMapper = userMapper;
+        this.mailSender = mailSender;
     }
 
     public int checkUserRepeat(String userEmail){
