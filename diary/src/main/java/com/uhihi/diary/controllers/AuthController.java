@@ -36,10 +36,14 @@ public class AuthController {
         /*
             check email repetition
          */
-        String userEmail = "can't get mail";
+        String userEmail = "failMail";
         int reStatus;
-        if(map.size() != 1){
+        if(map.size() == 1){
             userEmail = (String)map.get("email");
+        }
+        else{
+            log.error(String.format("/auth/emailcode: can't get userEmail we get %d object", map.size()));
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
         log.info("----------------------");
@@ -47,16 +51,15 @@ public class AuthController {
         log.info(String.format("/auth/emailcode: %s", userEmail));
         log.info("----------------------");
 
-        if (userEmail != "failToGetEmail") {
-            reStatus = userService.checkUserRepeat(userEmail);
-            if (reStatus == 1) {
-                return new ResponseEntity(HttpStatus.OK);
-            }
-            else if(reStatus == 3){ // fail
-                log.error(String.format("/auth/emailcode: fail to insert code in db or send mail"));
-                return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+        reStatus = userService.checkUserRepeat(userEmail);
+        if (reStatus == 1) {
+            return new ResponseEntity(HttpStatus.OK);
         }
+        else if(reStatus == 3){ // fail
+            log.error(String.format("/auth/emailcode: fail to insert code in db or send mail"));
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         log.error(String.format("/auth/emailcode: wrong email %s", userEmail));
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
