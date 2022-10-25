@@ -31,35 +31,28 @@ public class AuthController {
         return "TEST PAGE spring boot";
     }
 
-//    @PostMapping("/auth/emailcode")
-//    public ResponseEntity auth_email_code(@RequestParam(value="email", required = false, defaultValue = "failToGetEmail") String userEmail) {
-//        /*
-//            check email repetition
-//         */
-//        log.info(String.format("/auth/emailcode: %s", userEmail));
-//        if (userEmail != "failToGetEmail") {
-//            if (userService.checkUserRepeat(userEmail) == true) {
-//                return new ResponseEntity(userEmail, HttpStatus.OK);
-//            }
-//        }
-//        return new ResponseEntity(userEmail, HttpStatus.BAD_REQUEST);
-//    }
-
     @PostMapping("/auth/emailcode")
     public ResponseEntity auth_email_code(@RequestBody HashMap<String, Object> map){
         /*
             check email repetition
          */
-        log.info("--------------------");
-        log.info(String.valueOf(map));
+        String userEmail = "can't get mail";
+
+        if(map.size() != 1){
+            userEmail = (String)map.get("email");
+        }
+
         log.info("----------------------");
-//        log.info(String.format("/auth/emailcode: %s", userEmail));
-//        if (userEmail != "failToGetEmail") {
-//            if (userService.checkUserRepeat(userEmail) == true) {
-//                return new ResponseEntity(userEmail, HttpStatus.OK);
-//            }
-//        }
-//        return new ResponseEntity(userEmail, HttpStatus.BAD_REQUEST);
-        return new ResponseEntity(HttpStatus.OK);
+        log.info(String.valueOf(map));
+        log.info(String.format("/auth/emailcode: %s", userEmail));
+        log.info("----------------------");
+
+        if (userEmail != "failToGetEmail") {
+            if (userService.checkUserRepeat(userEmail) == true) {
+                return new ResponseEntity(HttpStatus.OK);
+            }
+        }
+        log.error(String.format("/auth/emailcode: wrong email %s", userEmail));
+        return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
 }
