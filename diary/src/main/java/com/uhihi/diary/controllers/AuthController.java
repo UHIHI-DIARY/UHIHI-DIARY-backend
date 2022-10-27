@@ -32,26 +32,18 @@ public class AuthController {
     }
 
     @PostMapping("/auth/emailcode")
-    public ResponseEntity auth_email_code(@RequestBody HashMap<String, Object> map){
+    public ResponseEntity authEmailCode(@RequestBody HashMap<String, Object> map){
         /*
-            check email repetition
+            check email repetition and receive code
          */
-        String userEmail = "failMail";
+        String userEmail = "defaultMail";
         int reStatus;
-        if(map.size() == 1){
-            userEmail = (String)map.get("email");
-        }
-        else{
+        if(map.size() != 1){
             log.error(String.format("/auth/emailcode: can't get userEmail we get %d object", map.size()));
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("WRONG_REQUEST",HttpStatus.BAD_REQUEST);
         }
-
-        log.info("----------------------");
-        log.info(String.valueOf(map));
-        log.info(String.format("/auth/emailcode: %s", userEmail));
-        log.info("----------------------");
-
-        reStatus = userService.checkUserRepeat(userEmail);
+        userEmail = (String)map.get("email");
+        reStatus = userService.authEmailcode(userEmail);
         if (reStatus == 1) {
             return new ResponseEntity(HttpStatus.OK);
         }
@@ -61,6 +53,49 @@ public class AuthController {
         }
 
         log.error(String.format("/auth/emailcode: wrong email %s", userEmail));
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity("EMAIL_REPEAT",HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/auth/emailcheck")
+    public ResponseEntity authEmailCheck(@RequestBody HashMap<String, Object> map){
+        /*
+            check email code
+         */
+        String userEmail = "defaultMail";
+        String code="defaultCode";
+        int reStatus = 0;
+        if(map.size() != 2){
+            log.error(String.format("/auth/emailcheck: can't get userEmail we get %d object", map.size()));
+            return new ResponseEntity("WRONG_REQUEST",HttpStatus.BAD_REQUEST);
+        }
+        userEmail = (String) map.get("email");
+        code = (String) map.get("code");
+        reStatus = userService.checkEmailCode(userEmail, code);
+        if (reStatus == 1) {
+            return new ResponseEntity(HttpStatus.OK);
+        }
+        else if(reStatus == 2) return new ResponseEntity("CODE_ERROR",HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PostMapping("/auth/register")
+    public ResponseEntity authRegister(@RequestBody HashMap<String, Object> map){
+        /*
+            Register
+            - check request info
+                - email repeat
+                - password format
+                - nickname format
+                - authCode
+            - register user
+         */
+        if(map.size() != 4){
+            log.error(String.format("/auth/register: can't get userEmail we get %d object", map.size()));
+            return new ResponseEntity("WRONG_REQUEST",HttpStatus.BAD_REQUEST);
+        }
+
+
+        return new ResponseEntity("WRONG_REQUEST",HttpStatus.BAD_REQUEST);
     }
 }
