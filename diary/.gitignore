@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 
 src/main/resources/application.properties
+src/main/java/com/uhihi/diary/model/Tokens.java
 
 ### STS ###
 .apt_generated

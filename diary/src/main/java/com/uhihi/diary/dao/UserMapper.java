@@ -29,4 +29,7 @@ public interface UserMapper {
     /*   /auth/register   */
     @Insert("INSERT INTO person(email, password, nickname, selfinfo) VALUES(#{userEmail}, #{password}, #{nickname}, #{selfInfo})")
     int insertRegisterUser(@Param("userEmail") String userEmail, @Param("password") String password, @Param("nickname") String nickname, @Param("selfInfo") String selfInfo);
+
+    @Update("UPDATE person SET refreshtoken = #{'token'}, tokenenddate=DATE_ADD(NOW(), INTERVAL 30 DAY) WHERE email=#{userEmail}")
+    int updateRefreshToken(@Param("token") String token, @Param("userEmail") String userEmail);
 }

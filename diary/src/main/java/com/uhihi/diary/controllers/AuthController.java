@@ -43,7 +43,7 @@ public class AuthController {
             return new ResponseEntity("WRONG_REQUEST",HttpStatus.BAD_REQUEST);
         }
         userEmail = (String)map.get("email");
-        reStatus = userService.authEmailcode(userEmail);
+        reStatus = userService.authEmailCode(userEmail);
         if (reStatus == 1) {
             return new ResponseEntity(HttpStatus.OK);
         }
@@ -53,7 +53,7 @@ public class AuthController {
         }
 
         log.error(String.format("/auth/emailcode: wrong email %s", userEmail));
-        return new ResponseEntity("EMAIL_REPEAT",HttpStatus.BAD_REQUEST);
+        return new ResponseEntity("EMAIL_ERROR",HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/auth/emailcheck")
@@ -89,13 +89,28 @@ public class AuthController {
                 - nickname format
                 - authCode
             - register user
+            - generate token
          */
+        String userEmail, password, nickname, code, status;
         if(map.size() != 4){
             log.error(String.format("/auth/register: can't get userEmail we get %d object", map.size()));
             return new ResponseEntity("WRONG_REQUEST",HttpStatus.BAD_REQUEST);
         }
+        userEmail = (String)map.get("email");
+        password = (String)map.get("password");
+        nickname = (String)map.get("nickname");
+        code = (String)map.get("code");
 
-
-        return new ResponseEntity("WRONG_REQUEST",HttpStatus.BAD_REQUEST);
+        status = userService.checkRegisterInfo(userEmail,password,nickname,code);
+        if(status == "OK"){
+            if(!userService.registerUser(userEmail, password, nickname,"")) return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity("token", HttpStatus.OK);
+        }
+        else if(status == "INTERNAL_SERVER_ERROR"){
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        else{
+            return new ResponseEntity(status,HttpStatus.BAD_REQUEST);
+        }
     }
 }

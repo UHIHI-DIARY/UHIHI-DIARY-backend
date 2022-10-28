@@ -2,8 +2,9 @@ package com.uhihi.diary.model;
 
 import com.uhihi.diary.dao.UserMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j
@@ -11,11 +12,11 @@ public class UserService {
     private final UserMapper userMapper;
     private MailSender mailSender;
 
-    public UserService(UserMapper userMapper, JavaMailSender mailSender){
+    public UserService(UserMapper userMapper){
         this.userMapper = userMapper;
     }
 
-    public int authEmailcode(String userEmail){
+    public int authEmailCode(String userEmail){
         if(!checkFormat(0, userEmail)){
             return 2; // bad request wrong email format
         }
@@ -56,6 +57,19 @@ public class UserService {
         }
     }
 
+    private boolean checkFormat(int dataType, String data){
+        if(dataType == 0){ // check email
+            return  Pattern.matches("/^0-9a-zA-Z@[0-9a-zA-Z.]\\.[a-zA-Z]{2,3}$/", data);
+        }
+        else if(dataType == 1){ // check password
+            return  Pattern.matches("/^(?=.[0-9])(?=.[a-zA-Z]).{8,20}$/",data) && Pattern.matches("/[^0-9a-zA-Z`~!@#$%^&*()-=_+]/",data);
+        }
+        else if(dataType == 2){ // check nickname
+            return  Pattern.matches("/^[a-zA-Z가-힇0-9]{2,8}$/", data);
+        }
+        return true;
+    }
+
     private int checkEmailRepeat(String userEmail){
         if(userEmail == null) {
             log.error(String.format("/UserService/checkEmailRepeat: wrong parameter[userEmail=%s]"), userEmail);
@@ -69,6 +83,7 @@ public class UserService {
             return 3; // 500
         }
     }
+
     private  String generateCode(){
         int random_number = (int) ((Math.random() * (999999 - 100000)) + 100000);
         return String.format("%06d",random_number);
@@ -88,6 +103,7 @@ public class UserService {
             return 2; // 400
         }
         try {
+            if(!checkFormat(0, userEmail)) return 2; // 400 wrong request
             if(userMapper.countEmailCode(userEmail, code) == 1) return 1; // success
             return 2; // 400
         }
@@ -98,56 +114,44 @@ public class UserService {
 
     }
 
-    public boolean authRegister(){
-
-        return true;
-    }
-
-    public int checkRegisterInfo(String userEmail, String password, String nickname, String code){
+    public String checkRegisterInfo(String userEmail, String password, String nickname, String code){
         int status=0;
         // email repeat - error[4]
         status = checkEmailRepeat(userEmail);
-        if(status == 2) return 4;
-        else if(status == 3) return 3;
+        if(status == 2) return "EMAIL_ERROR";
+        else if(status == 3) return "INTERNAL_SERVER_ERROR";
 
         // password format - error[5]
-        if(!checkFormat(1, password)) return 5;
+        if(!checkFormat(1, password)) return "PASSWORD_ERROR";
 
         // nickname format - error[6]
-        if(!checkFormat(2, nickname)) return 6;
+        if(!checkFormat(2, nickname)) return "NICKNAME_ERROR";
 
         // authCode - error[7]
         status = checkEmailCode(userEmail, code);
         if(status == 1){
             try{
                 userMapper.deleteCode(userEmail);
-                return 1;
+                return "OK";
             }
             catch (Exception e){
-                return 3;
+                return "INTERNAL_SERVER_ERROR";
             }
         }
-        else if(status == 2) return 7;
-        else return 3; // 500
+        else if(status == 2) return "CODE_ERROR";
+        else return "INTERNAL_SERVER_ERROR"; // 500
     }
-    private boolean checkFormat(int dataType, String data){
-        if(dataType == 0){ // check email
 
+    public boolean registerUser(String userEmail, String password, String nickname, String selfInfo){
+        try{
+            userMapper.insertRegisterUser(userEmail, password, nickname, selfInfo);
+            return true;
         }
-        else if(dataType == 1){ // check password
-
+        catch(Exception e){
+            log.error("/UserService/registerUser: fail to insert user in person");
+            return false;
         }
-        else if(dataType == 2){ // check nickname
-
-        }
-        return true;
     }
 
-    private boolean registerUser(String userEmail, String password, String nickname, String selfInfo){
 
-        return true;
-    }
-    private void generateToken(){
-
-    }
 }
