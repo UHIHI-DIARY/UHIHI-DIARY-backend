@@ -5,8 +5,8 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface UserMapper {
     /*
-    @Select("SELECT * FROM person")
-    List<User> findAll();
+        @Select("SELECT * FROM person")
+        List<User> findAll();
    */
 
     /*   /auth/emailcode   */
@@ -21,7 +21,7 @@ public interface UserMapper {
     int deleteCode(@Param("userEmail") String userEmail);
 
     /*   /auth/emailcheck   */
-    @Select("SELECT COUNT(email) FROM person WHERE email = #{userEmail} AND code = #{userCode}")
+    @Select("SELECT COUNT(email) FROM auth_email WHERE email = #{userEmail} AND code = #{userCode}")
     int countEmailCode(@Param("userEmail") String userEmail, @Param("userCode") String userCode);
 
     /*   /auth/register   */

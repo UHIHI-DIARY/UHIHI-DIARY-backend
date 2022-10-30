@@ -3,15 +3,17 @@ package com.uhihi.diary.model;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 
+@Service
 @Slf4j
-public class MailSender {
+public class MailSendService {
     private final JavaMailSender mailSender;
     private static final String FROM_ADDRESS = "uhihidiary@gmail.com";
 
-    public MailSender(JavaMailSender mailSender) {
+    public MailSendService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
