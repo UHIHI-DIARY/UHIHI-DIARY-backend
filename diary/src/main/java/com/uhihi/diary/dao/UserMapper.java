@@ -13,7 +13,7 @@ public interface UserMapper {
     @Select("SELECT COUNT(email) FROM person WHERE email = #{userEmail}")
     int countEmailRepeat(@Param("userEmail") String userEmail);
 
-    @Insert("REPLACE INTO auth_email(email, code) VALUES(#{userEmail}, #{code})")
+    @Insert("REPLACE INTO auth_email(email, code, timestamp) VALUES(#{userEmail}, #{code}, now())")
     int insertCheckCode(@Param("userEmail") String userEmail, @Param("code") String code);
 
     // delete auth code

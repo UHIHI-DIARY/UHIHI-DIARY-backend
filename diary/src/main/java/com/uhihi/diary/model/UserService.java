@@ -53,6 +53,8 @@ public class UserService {
             return status;
         }
         catch (Exception e){
+//            log.error(e.printStackTrace());
+            e.printStackTrace();
             log.error("/UserService/authEmailCode: fail to insert or delete authCode");
             return 3;
         }
