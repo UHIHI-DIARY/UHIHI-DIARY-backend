@@ -63,7 +63,7 @@ public class UserService {
             return  Pattern.matches("^[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*@[0-9a-zA-Z.]*\\.[a-zA-Z]{2,3}$", data);
         }
         else if(dataType == 1){ // check password
-            return  Pattern.matches("^(?=.*[0-9])(?=.*[a-zA-Z]).{8,20}$",data) && !Pattern.matches("[^0-9a-zA-Z`~!@#$%^&*()-=_+]",data);
+            return  Pattern.matches("^(?=.*[0-9])(?=.*[a-zA-Z]).{8,20}$",data) && !Pattern.matches("(.*)[^0-9a-zA-Z`~!@#$%^&*()-=_+](.*)",data);
         }
         else if(dataType == 2){ // check nickname
             return  Pattern.matches("^[a-zA-Z가-힇0-9]{2,8}$", data);
