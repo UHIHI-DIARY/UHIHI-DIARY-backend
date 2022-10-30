@@ -18,7 +18,7 @@ public class UserService {
 
     public int authEmailCode(String userEmail){
         if(!checkFormat(0, userEmail)){
-            log.error("/UserService/authEmailCode: checkFormat fail");
+            log.error(String.format("/UserService/authEmailCode: checkFormat wrong[%s]", userEmail));
             return 2; // bad request wrong email format
         }
         try{
@@ -60,10 +60,10 @@ public class UserService {
 
     private boolean checkFormat(int dataType, String data){
         if(dataType == 0){ // check email
-            return  Pattern.matches("/^0-9a-zA-Z@[0-9a-zA-Z.]\\.[a-zA-Z]{2,3}$/", data);
+            return  Pattern.matches("/^[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*@[0-9a-zA-Z.]*\\.[a-zA-Z]{2,3}$/i", data);
         }
         else if(dataType == 1){ // check password
-            return  Pattern.matches("/^(?=.[0-9])(?=.[a-zA-Z]).{8,20}$/",data) && Pattern.matches("/[^0-9a-zA-Z`~!@#$%^&*()-=_+]/",data);
+            return  Pattern.matches("/^(?=.*[0-9])(?=.*[a-zA-Z]).{8,20}$/",data) && !Pattern.matches("/[^0-9a-zA-Z`~!@#$%^&*()-=_+]/",data);
         }
         else if(dataType == 2){ // check nickname
             return  Pattern.matches("/^[a-zA-Z가-힇0-9]{2,8}$/", data);
