@@ -18,6 +18,7 @@ public class UserService {
 
     public int authEmailCode(String userEmail){
         if(!checkFormat(0, userEmail)){
+            log.error("/UserService/authEmailCode: checkFormat fail");
             return 2; // bad request wrong email format
         }
         try{
