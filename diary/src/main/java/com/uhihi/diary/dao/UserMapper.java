@@ -1,15 +1,13 @@
 package com.uhihi.diary.dao;
 
-import com.uhihi.diary.dto.User;
 import org.apache.ibatis.annotations.*;
-
-import java.util.List;
 
 @Mapper
 public interface UserMapper {
-
+    /*
     @Select("SELECT * FROM person")
     List<User> findAll();
+   */
 
     /*   /auth/emailcode   */
     @Select("SELECT COUNT(email) FROM person WHERE email = #{userEmail}")
@@ -20,7 +18,7 @@ public interface UserMapper {
 
     // delete auth code
     @Delete("DELETE from auth_email where email = #{userEmail}")
-    int deleteCode(@Param("userEmail") String userEmail);
+    void deleteCode(@Param("userEmail") String userEmail);
 
     /*   /auth/emailcheck   */
     @Select("SELECT COUNT(email) FROM person WHERE email = #{userEmail} AND code = #{userCode}")
@@ -28,8 +26,8 @@ public interface UserMapper {
 
     /*   /auth/register   */
     @Insert("INSERT INTO person(email, password, nickname, selfinfo) VALUES(#{userEmail}, #{password}, #{nickname}, #{selfInfo})")
-    int insertRegisterUser(@Param("userEmail") String userEmail, @Param("password") String password, @Param("nickname") String nickname, @Param("selfInfo") String selfInfo);
+    void insertRegisterUser(@Param("userEmail") String userEmail, @Param("password") String password, @Param("nickname") String nickname, @Param("selfInfo") String selfInfo);
 
     @Update("UPDATE person SET refreshtoken = #{'token'}, tokenenddate=DATE_ADD(NOW(), INTERVAL 30 DAY) WHERE email=#{userEmail}")
-    int updateRefreshToken(@Param("token") String token, @Param("userEmail") String userEmail);
+    void updateRefreshToken(@Param("token") String token, @Param("userEmail") String userEmail);
 }

@@ -1,5 +1,6 @@
 package com.uhihi.diary.controllers;
 
+import com.uhihi.diary.model.Tokens;
 import com.uhihi.diary.model.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,10 @@ public class AuthController {
     */
 
     private UserService userService;
-
-    public AuthController(UserService userService){
+    private Tokens token;
+    public AuthController(UserService userService, Tokens token){
         this.userService = userService;
+        this.token = token;
     }
 
     @RequestMapping("/test")
@@ -103,8 +105,14 @@ public class AuthController {
 
         status = userService.checkRegisterInfo(userEmail,password,nickname,code);
         if(status == "OK"){
+            // generate token and insert in db
             if(!userService.registerUser(userEmail, password, nickname,"")) return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity("token", HttpStatus.OK);
+            HashMap<String, String> tokens = new HashMap<>();
+            tokens = token.generateTokens(userEmail);
+            if(tokens.get("status")=="FAIL")
+                return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+
+            return new ResponseEntity(tokens, HttpStatus.OK);
         }
         else if(status == "INTERNAL_SERVER_ERROR"){
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
