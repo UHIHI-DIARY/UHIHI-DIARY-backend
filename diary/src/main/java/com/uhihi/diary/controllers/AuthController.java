@@ -110,7 +110,7 @@ public class AuthController {
             HashMap<String, String> tokens = new HashMap<>();
             tokens = token.generateTokens(userEmail);
             if(tokens.get("status")=="FAIL")
-                return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity( "FAIL_TO_GENERATE_TOKEN",HttpStatus.INTERNAL_SERVER_ERROR);
 
             return new ResponseEntity(tokens, HttpStatus.OK);
         }
