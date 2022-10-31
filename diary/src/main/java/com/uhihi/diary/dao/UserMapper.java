@@ -33,4 +33,8 @@ public interface UserMapper {
 
     @Delete("delete from person where email = #{userEmail}")
     int deleteUserFromPerson(@Param("userEmail") String userEmail);
+
+    /*   /auth/authLogin   */
+    @Select("SELECT COUNT(email) FROM person WHERE email = #{userEmail} AND password= #{password}")
+    int countForLogin(@Param("userEmail") String userEmail, @Param("password") String password);
 }

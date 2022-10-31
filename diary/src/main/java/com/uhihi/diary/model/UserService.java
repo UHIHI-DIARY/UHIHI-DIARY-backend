@@ -120,6 +120,11 @@ public class UserService {
 
     public String checkRegisterInfo(String userEmail, String password, String nickname, String code){
         int status=0;
+        if(userEmail == null || code == null || password == null || nickname == null){
+            log.error(String.format("/UserService/checkRegisterInfo: wrong parameter[userEmail=%s, code=%s, password=%s, nickname=%s]:"), userEmail, code, password, nickname);
+            return "WRONG_PARAMETER"; // 400
+        }
+
         // email repeat - error[4]
         status = checkEmailRepeat(userEmail);
         if(status == 2) return "EMAIL_ERROR";
@@ -158,4 +163,18 @@ public class UserService {
     }
 
 
+    public int LoginUser(String userEmail, String password) {
+        try {
+            if(userMapper.countForLogin(userEmail, password) == 1) return 1;
+            else{
+                log.error(String.format("/UserService/LoginUser: wrong user info[email:%s, password:%s]", userEmail, password));
+                return 2; // 400
+            }
+        }
+        catch (Exception e){
+            log.error("/UserService/LoginUser: fail to check login user");
+            return 3; // 500
+        }
+
+    }
 }

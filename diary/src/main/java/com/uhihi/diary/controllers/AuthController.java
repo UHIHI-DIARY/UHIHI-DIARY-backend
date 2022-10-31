@@ -106,19 +106,52 @@ public class AuthController {
         status = userService.checkRegisterInfo(userEmail,password,nickname,code);
         if(status == "OK"){
             // generate token and insert in db
-            if(!userService.registerUser(userEmail, password, nickname,"")) return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            if(!userService.registerUser(userEmail, password, nickname,"")){
+                log.error("/AuthController/authRegister: fail to register user");
+                return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             HashMap<String, String> tokens = new HashMap<>();
             tokens = token.generateTokens(userEmail);
-            if(tokens.get("status")=="FAIL")
-                return new ResponseEntity( "FAIL_TO_GENERATE_TOKEN",HttpStatus.INTERNAL_SERVER_ERROR);
-
+            if(tokens.get("status")=="FAIL") {
+                log.error("/AuthController/authRegister: fail to generate tokens");
+                return new ResponseEntity("FAIL_TO_GENERATE_TOKEN", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             return new ResponseEntity(tokens, HttpStatus.OK);
         }
         else if(status == "INTERNAL_SERVER_ERROR"){
+            log.error("/AuthController/authRegister: fail to check register info");
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         else{
+            log.error(String.format("/AuthController/authRegister: wrong request_%s"), status);
             return new ResponseEntity(status,HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/auth/login")
+    public ResponseEntity authLogin(@RequestBody HashMap<String, Object> map){
+        /*
+            Login
+            - check email and password to define either user or not
+            - if user response Token
+         */
+        String userEmail, password;
+        int status;
+        if(map.size() != 2){
+            log.error(String.format("/auth/authLogin: can't get userEmail we get %d object", map.size()));
+            return new ResponseEntity("BAD_PARAMETER",HttpStatus.BAD_REQUEST);
+        }
+        userEmail = (String)map.get("email");
+        password = (String)map.get("password");
+        status = userService.LoginUser(userEmail, password);
+        if(status == 2) return new ResponseEntity("NOT_FOUND", HttpStatus.BAD_REQUEST);
+        else if( status == 3) return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        HashMap<String, String> tokens = new HashMap<>();
+        tokens = token.generateTokens(userEmail);
+        if(tokens.get("status")=="FAIL")
+            return new ResponseEntity( "FAIL_TO_GENERATE_TOKEN",HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity(tokens, HttpStatus.OK);
+
     }
 }
